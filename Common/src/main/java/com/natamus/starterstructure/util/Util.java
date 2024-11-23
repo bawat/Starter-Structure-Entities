@@ -34,6 +34,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.function.BiConsumer;
+
+import javax.annotation.Nullable;
 
 public class Util {
     public static HashMap<Level, List<BlockPos>> protectedMap = new HashMap<Level, List<BlockPos>>();
@@ -57,7 +60,7 @@ public class Util {
         return true;
     }
 
-    public static BlockPos generateSchematic(ServerLevel serverLevel) {
+    public static BlockPos generateSchematic(ServerLevel serverLevel, @Nullable BiConsumer<BlockPos, ServerLevel> generator) {
         if (!schematicDir.isDirectory()) {
             if (!initDirs()) {
                 logger.info(logPrefix + "Unable to generate directories.");
@@ -85,7 +88,8 @@ public class Util {
             return null;
         }
 
-        boolean automaticCenter = schematicFile.getName().endsWith(".nbt");
+        String schematicName = schematicFile.getName().toLowerCase();
+        boolean automaticCenter = schematicName.endsWith(".nbt");
 
         BlockPos structurePos = serverLevel.getSharedSpawnPos();
 
@@ -99,6 +103,12 @@ public class Util {
 
         if (ConfigHandler.shouldUseStructureOffset) {
             structurePos = structurePos.offset(ConfigHandler.generatedStructureXOffset, ConfigHandler.generatedStructureYOffset, ConfigHandler.generatedStructureZOffset).immutable();
+        }
+        
+        //Use Worldedit to load the schematic if it can
+        if(generator != null && (schematicName.endsWith(".schematic") || schematicName.endsWith(".schem"))) {
+        	generator.accept(structurePos, serverLevel);
+        	return structurePos;
         }
 
 

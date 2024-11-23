@@ -1,5 +1,8 @@
 package com.natamus.starterstructure;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import com.natamus.collective.check.RegisterMod;
 import com.natamus.collective.check.ShouldLoadCheck;
 import com.natamus.collective.fabric.callbacks.*;
@@ -7,6 +10,7 @@ import com.natamus.starterstructure.events.StructureCreationEvents;
 import com.natamus.starterstructure.events.StructureProtectionEvents;
 import com.natamus.starterstructure.events.StructureSpawnPointEvents;
 import com.natamus.starterstructure.util.Reference;
+
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
@@ -25,6 +29,19 @@ import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ServerLevelData;
+import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.extent.clipboard.Clipboard;
+import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormat;
+import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormats;
+import com.sk89q.worldedit.extent.clipboard.io.ClipboardReader;
+import com.sk89q.worldedit.fabric.FabricAdapter;
+import com.sk89q.worldedit.function.operation.Operation;
+import com.sk89q.worldedit.function.operation.Operations;
+import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.session.ClipboardHolder;
+import com.sk89q.worldedit.world.World;
 
 public class ModFabric implements ModInitializer {
 	
@@ -42,10 +59,48 @@ public class ModFabric implements ModInitializer {
 		RegisterMod.register(Reference.NAME, Reference.MOD_ID, Reference.VERSION, Reference.ACCEPTED_VERSIONS);
 	}
 
+	private void generateSchematicUsingWorldEdit(BlockPos structurePos, ServerLevel level) {
+    	/*
+    	ServerPlayerEntity player = context.getSource().getPlayer();
+		SessionManager manager = WorldEdit.getInstance().getSessionManager();
+        FabricPlayer owner = FabricAdapter.adaptPlayer(player);
+        LocalSession session = manager.get(owner);*/
+        
+        Clipboard clipboard = null;
+
+		File file = new File("C:/MarkMachetaSchematics/testSchem.schem");
+		ClipboardFormat format = ClipboardFormats.findByFile(file);
+		try (ClipboardReader reader = format.getReader(new FileInputStream(file))) {
+		    clipboard = reader.read();
+		} catch (IOException e) {
+			//LOGGER.error(e.getMessage());
+			e.printStackTrace();
+		}
+		
+		World worldEditWorld = FabricAdapter.adapt(level);
+		try (EditSession editSession = WorldEdit.getInstance().newEditSession(worldEditWorld)) {
+		    editSession.enableQueue();
+		    
+		    Operation operation = new ClipboardHolder(clipboard)
+		            .createPaste(editSession)
+		            .to(BlockVector3.at(structurePos.getX(), structurePos.getY(), structurePos.getZ()))
+		            .copyEntities(true)
+		            // configure here
+		            .build();
+		    Operations.complete(operation);
+
+            editSession.disableQueue();
+		} catch (WorldEditException e) {
+			// TODO Auto-generated catch block
+			//LOGGER.error(e.getMessage());
+			e.printStackTrace();
+		}
+    }
+	
 	private void loadEvents() {
 		// StructureCreationEvents
 		CollectiveMinecraftServerEvents.WORLD_SET_SPAWN.register((ServerLevel serverLevel, ServerLevelData serverLevelData) -> {
-			StructureCreationEvents.onLevelSpawn(serverLevel, serverLevelData);
+			StructureCreationEvents.onLevelSpawn(serverLevel, serverLevelData, this::generateSchematicUsingWorldEdit);
 		});
 
 		ServerWorldEvents.LOAD.register((MinecraftServer server, ServerLevel serverLevel) -> {

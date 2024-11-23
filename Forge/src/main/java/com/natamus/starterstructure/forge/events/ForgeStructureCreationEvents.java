@@ -1,5 +1,7 @@
 package com.natamus.starterstructure.forge.events;
 
+import java.util.Optional;
+
 import com.natamus.collective.functions.WorldFunctions;
 import com.natamus.starterstructure.events.StructureCreationEvents;
 import net.minecraft.server.level.ServerLevel;
@@ -20,7 +22,7 @@ public class ForgeStructureCreationEvents {
 			return;
 		}
 		
-		if (StructureCreationEvents.onLevelSpawn((ServerLevel)level, (ServerLevelData)level.getLevelData()).equals(InteractionResult.SUCCESS)) {
+		if (StructureCreationEvents.onLevelSpawn((ServerLevel)level, (ServerLevelData)level.getLevelData(), null).equals(InteractionResult.SUCCESS)) {
 			e.setCanceled(true);
 		}
 	}

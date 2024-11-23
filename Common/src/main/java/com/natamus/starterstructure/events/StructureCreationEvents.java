@@ -1,5 +1,12 @@
 package com.natamus.starterstructure.events;
 
+import java.util.Optional;
+import java.util.function.BiConsumer;
+
+import javax.annotation.Nullable;
+
+import org.apache.logging.log4j.util.TriConsumer;
+
 import com.natamus.collective.functions.FeatureFunctions;
 import com.natamus.collective.functions.TaskFunctions;
 import com.natamus.starterstructure.config.ConfigHandler;
@@ -11,12 +18,12 @@ import net.minecraft.world.level.levelgen.WorldOptions;
 import net.minecraft.world.level.storage.ServerLevelData;
 
 public class StructureCreationEvents {
-	public static InteractionResult onLevelSpawn(ServerLevel serverLevel, ServerLevelData serverLevelData) {
+	public static InteractionResult onLevelSpawn(ServerLevel serverLevel, ServerLevelData serverLevelData, @Nullable BiConsumer<BlockPos, ServerLevel> generator) {
 		TaskFunctions.enqueueCollectiveTask(serverLevel.getServer(), () -> {
 			if (ConfigHandler.shouldGenerateStructure) {
 				BlockPos spawnPos = null;
 
-				BlockPos structurePos = Util.generateSchematic(serverLevel);
+				BlockPos structurePos = Util.generateSchematic(serverLevel, generator);
 				if (structurePos != null) {
 					spawnPos = structurePos.immutable();
 					if (ConfigHandler.shouldUseSpawnCoordOffsets) {
