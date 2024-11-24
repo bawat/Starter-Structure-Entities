@@ -24,7 +24,7 @@ dependencies {
     modApi("com.terraformersmc:modmenu:7.0.1") { exclude(module: "fabric-api") }
 
     modImplementation "com.natamus.collective-ml:collective-fabric:${minecraft_version}-${collective_version}"
-    modCompileOnly "com.natamus.collective-ml:collective:${minecraft_version}-${collective_version}"
+    modCompileOnly "com.natamus.collective-ml:collective-fabric:${minecraft_version}-${collective_version}"
 
     modImplementation("com.sk89q.worldedit:worldedit-fabric-mc1.20:7.2.15") {
         exclude group: "org.apache.logging.log4j"
