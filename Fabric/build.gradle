@@ -29,7 +29,7 @@ dependencies {
     modImplementation("com.sk89q.worldedit:worldedit-fabric-mc1.20:7.2.15") {
         exclude group: "org.apache.logging.log4j"
     }
-    include "com.sk89q.worldedit:worldedit-fabric-mc1.20:7.2.15"
+    modCompileOnly "com.sk89q.worldedit:worldedit-fabric-mc1.20:7.2.15"
 }
 
 loom {
