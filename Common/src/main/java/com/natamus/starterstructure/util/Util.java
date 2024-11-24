@@ -24,6 +24,8 @@ import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.SignBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+
+import org.apache.logging.log4j.util.TriConsumer;
 import org.slf4j.Logger;
 
 import java.io.File;
@@ -60,7 +62,7 @@ public class Util {
         return true;
     }
 
-    public static BlockPos generateSchematic(ServerLevel serverLevel, @Nullable BiConsumer<BlockPos, ServerLevel> generator) {
+    public static BlockPos generateSchematic(ServerLevel serverLevel, @Nullable TriConsumer<File, BlockPos, ServerLevel> generator) {
         if (!schematicDir.isDirectory()) {
             if (!initDirs()) {
                 logger.info(logPrefix + "Unable to generate directories.");
@@ -107,7 +109,7 @@ public class Util {
         
         //Use Worldedit to load the schematic if it can
         if(generator != null && (schematicName.endsWith(".schematic") || schematicName.endsWith(".schem"))) {
-        	generator.accept(structurePos, serverLevel);
+        	generator.accept(schematicFile, structurePos, serverLevel);
         	return structurePos;
         }
 

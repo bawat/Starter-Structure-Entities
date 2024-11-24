@@ -1,5 +1,6 @@
 package com.natamus.starterstructure.events;
 
+import java.io.File;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 
@@ -18,7 +19,7 @@ import net.minecraft.world.level.levelgen.WorldOptions;
 import net.minecraft.world.level.storage.ServerLevelData;
 
 public class StructureCreationEvents {
-	public static InteractionResult onLevelSpawn(ServerLevel serverLevel, ServerLevelData serverLevelData, @Nullable BiConsumer<BlockPos, ServerLevel> generator) {
+	public static InteractionResult onLevelSpawn(ServerLevel serverLevel, ServerLevelData serverLevelData, @Nullable TriConsumer<File, BlockPos, ServerLevel> generator) {
 		TaskFunctions.enqueueCollectiveTask(serverLevel.getServer(), () -> {
 			if (ConfigHandler.shouldGenerateStructure) {
 				BlockPos spawnPos = null;

@@ -59,7 +59,7 @@ public class ModFabric implements ModInitializer {
 		RegisterMod.register(Reference.NAME, Reference.MOD_ID, Reference.VERSION, Reference.ACCEPTED_VERSIONS);
 	}
 
-	private void generateSchematicUsingWorldEdit(BlockPos structurePos, ServerLevel level) {
+	private void generateSchematicUsingWorldEdit(File schematicFile, BlockPos structurePos, ServerLevel level) {
     	/*
     	ServerPlayerEntity player = context.getSource().getPlayer();
 		SessionManager manager = WorldEdit.getInstance().getSessionManager();
@@ -68,9 +68,8 @@ public class ModFabric implements ModInitializer {
         
         Clipboard clipboard = null;
 
-		File file = new File("C:/MarkMachetaSchematics/testSchem.schem");
-		ClipboardFormat format = ClipboardFormats.findByFile(file);
-		try (ClipboardReader reader = format.getReader(new FileInputStream(file))) {
+		ClipboardFormat format = ClipboardFormats.findByFile(schematicFile);
+		try (ClipboardReader reader = format.getReader(new FileInputStream(schematicFile))) {
 		    clipboard = reader.read();
 		} catch (IOException e) {
 			//LOGGER.error(e.getMessage());
