@@ -78,8 +78,6 @@ public class ModFabric implements ModInitializer {
 		
 		World worldEditWorld = FabricAdapter.adapt(level);
 		try (EditSession editSession = WorldEdit.getInstance().newEditSession(worldEditWorld)) {
-		    editSession.enableQueue();
-		    
 		    Operation operation = new ClipboardHolder(clipboard)
 		            .createPaste(editSession)
 		            .to(BlockVector3.at(structurePos.getX(), structurePos.getY(), structurePos.getZ()))
@@ -87,8 +85,6 @@ public class ModFabric implements ModInitializer {
 		            // configure here
 		            .build();
 		    Operations.complete(operation);
-
-            editSession.disableQueue();
 		} catch (WorldEditException e) {
 			// TODO Auto-generated catch block
 			//LOGGER.error(e.getMessage());
